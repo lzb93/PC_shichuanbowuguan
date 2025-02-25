@@ -1,0 +1,43 @@
+@import './base.css';
+a,
+.green {
+    text-decoration: none;
+    /* color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px; */
+}
+
+.derline, .derlineBlack {
+    position: relative;
+    cursor: pointer;
+}
+
+.derline::after, .derlineBlack::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    width: 0;
+    height: 3px;
+    background-color: #fff;
+    transform: translateX(-50%);
+    transition: width 0.5s;
+}
+.derlineBlack::after { 
+    background-color: #333333;
+ }
+
+.derline:hover.derline::after, .derlineBlack:hover.derlineBlack::after {
+    width: 100%;
+}
+
+@media (hover: hover) {
+    a:hover {
+        /* background-color: hsla(160, 100%, 37%, 0.2); */
+    }
+}
+
+@media (min-width: 1024px) {
+    body {}
+}

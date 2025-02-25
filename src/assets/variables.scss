@@ -1,0 +1,100 @@
+$color-main-primary: #079163;
+
+$app-color-main-primary: #079163; //主色调
+$app-color-main-hover: #00b4b4; //主色调-高亮色
+
+$app-color-alert-primary: #01b277; //提示-主色调
+$app-color-alert-hover: #00b4b4; //提示-高亮
+$app-color-alert-disable: #d0e7fc; //提示-禁用
+$app-color-alert-light: #e7f3fd; //提示-底色
+
+$app-color-help-primary: #01a79a; //帮助-主色调
+$app-color-help-hover: #01c1b2; //帮助-高亮
+$app-color-help-disable: #c0ece2; //帮助-禁用
+$app-color-help-light: #e3fff8; //帮助-底色
+
+$app-color-success-primary: #04844b; //成功-主色调
+$app-color-success-hover: #20ab5c; //成功-高亮
+$app-color-success-disable: #b7eacc; //成功-禁用
+$app-color-success-light: #dbf4e6; //成功-底色
+
+$app-color-warn-primary: #eb7e10; //警告-主色调
+$app-color-warn-hover: #ff9e2c; //警告-高亮
+$app-color-warn-disable: #fff1df; //警告-禁用
+$app-color-warn-light: #fff7ee; //警告-底色
+
+$app-color-error-primary: #ac0000; //错误-主色调
+$app-color-error-hover: #d11211; //错误-高亮
+$app-color-error-disable: #f2cccc; //错误-禁用
+$app-color-error-light: #f8e5e5; //错误-底色
+
+$app-color-echart-1: #0b83de; //图表辅助颜色1
+$app-color-echart-2: #3151d4; //图表辅助颜色2
+$app-color-echart-3: #7836cf; //图表辅助颜色3
+$app-color-echart-4: #e34027; //图表辅助颜色4
+$app-color-echart-5: #f08216; //图表辅助颜色5
+$app-color-echart-6: #f5c827; //图表辅助颜色6
+$app-color-echart-7: #61b50d; //图表辅助颜色7
+$app-color-echart-8: #10aab5; //图表辅助颜色8
+
+$app-color-neutral-900: #18191a; //中性色
+$app-color-neutral-800: #393b3d; //中性色
+$app-color-neutral-700: #5e6164; //中性色
+$app-color-neutral-600: #717579; //中性色
+$app-color-neutral-500: #9b9ea1; //中性色
+$app-color-neutral-400: #bbbdbf; //中性色
+$app-color-neutral-300: #dfe0e1; //中性色
+$app-color-neutral-200: #edeeef; //中性色
+$app-color-neutral-100: #f5f5f5; //中性色
+$app-color-neutral-50: #fafafa; //中性色
+
+/* 文字颜色 */
+$app-color-font-disable: $app-color-neutral-400; //文字-禁用
+$app-color-font-tip: $app-color-neutral-600; //文字-提示
+$app-color-font-content: $app-color-neutral-800; //文字-次要文字
+$app-color-font-primary: $app-color-neutral-900; //文字-主要文字
+$app-color-font-link: $app-color-main-primary; //文字-链接
+$app-color-font-inverse: #030303; //文字-反色
+
+/* 圆角 */
+$app-border-radius-sm: 8rpx; //小圆角
+$app-border-radius-basic: 12rpx; //正常圆角
+$app-border-radius-lg: 24rpx; //大圆角
+
+/* 背景色 */
+$app-color-bg: $app-color-neutral-100;
+$app-color-bg-main: $app-color-main-primary;
+$app-color-bg-alert: $app-color-alert-primary;
+$app-color-bg-help: $app-color-help-primary;
+$app-color-bg-success: $app-color-success-primary;
+$app-color-bg-warn: $app-color-warn-primary;
+$app-color-bg-error: $app-color-error-primary;
+
+/* 字体大小 */
+$app-font-size-xs: 20rpx; //-超小
+$app-font-size-sm: 24rpx; //字体大小-小号
+$app-font-size-basic: 28rpx; //字体大小-正常
+$app-font-size-lg: 32rpx; //字体大小-大号
+$app-font-size-xl: 40rpx; //字体大小-超大号
+$app-font-size-xxl: 56rpx; //字体大小-超大号2
+
+/* 分割线 颜色 */
+$app-color-divider-light: $app-color-neutral-100; //浅色
+$app-color-divider-basic: $app-color-neutral-300; //正常
+$app-color-divider-dark: $app-color-neutral-400; //深色
+
+/* 边框颜色 */
+$app-border-color: $app-color-divider-light;
+
+/* 水平间距 */
+$app-spacing-row-xs: 8rpx;
+$app-spacing-row-sm: 16rpx;
+$app-spacing-row-basic: 24rpx;
+$app-spacing-row-lg: 32rpx;
+$app-spacing-row-xl: 48rpx;
+
+/* 垂直间距 */
+$app-spacing-col-xs: 8rpx;
+$app-spacing-col-sm: 16rpx;
+$app-spacing-col-basic: 24rpx;
+$app-spacing-col-lg: 32rpx;
