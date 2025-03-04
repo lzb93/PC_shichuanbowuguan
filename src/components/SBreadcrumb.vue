@@ -1,6 +1,6 @@
 <script setup>
 import { ref, defineProps, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 // 定义组件接收的 props
 const props = defineProps({
@@ -12,6 +12,8 @@ const props = defineProps({
 });
 
 const route = useRoute();
+const router = useRouter();
+const routes = router.options.routes;
 const breadcrumbList = ref([]);
 
 const generateBreadcrumb = () => {
@@ -23,6 +25,16 @@ const generateBreadcrumb = () => {
   const lists = [{ title: '首页', link: '/' }];
   matchedRoutes.forEach((matchedRoute) => {
     if (matchedRoute.meta && matchedRoute.meta.title) {
+      if (matchedRoute.meta.pid) {
+        const pid = matchedRoute.meta.pid.split('/')
+        const pidList = routes.filter(o => pid.includes(o.name)) 
+        pidList.map(o => {
+          lists.push({
+            link: o.path,
+            title: o.meta.title
+          })
+        })
+      }
       lists.push({
         link: route.name === matchedRoute.name ? undefined : matchedRoute.path,
         title: matchedRoute.meta.title

@@ -37,11 +37,25 @@ export default defineConfig({
             overlay: true
         },
         proxy: {
-            '/api': {
+            '/api/website': {
                 // target: 'http://mrg.com/api', // hosts 配置地址
-                target: 'https://dev-mrg-zlt.16u.cc/api', // 测试环境地址
+                // target: 'https://dev-mrg-zlt.16u.cc/api/website', // 外网测试环境地址
+                target: 'http://zlt-k8s.16u.cc/api/website', // 内网网测试环境地址
                 changeOrigin: true,
-                rewrite: path => path.replace(/^\/api/, '')
+                rewrite: path => path.replace(/^\/api\/website/, '')
+            },
+            '/api/pxy/studyfurther': {
+                // target: 'http://mrg.com/api', // hosts 配置地址
+                // target: 'https://dev-mrg-zlt.16u.cc/api/website', // 外网测试环境地址
+                target: 'http://zlt-k8s.16u.cc/api/pxy/studyfurther', // 内网网测试环境地址
+                changeOrigin: true,
+                rewrite: path => path.replace(/^\/api\/pxy\/studyfurther/, '')
+            },
+            '/api/pxy/publicity': {
+                // target: 'http://mrg.com/api', // hosts 配置地址
+                target: 'http://mrg-publicity.16u.cc/api/pxy/publicity', // 测试环境地址
+                changeOrigin: true,
+                rewrite: path => path.replace(/^\/api\/pxy\/publicity/, '')
             }
         }
     }

@@ -1,88 +1,142 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import SBreadcrumb from '@/components/SBreadcrumb.vue'
 import SPagination from '@/components/SPagination.vue'
-const navItems = ref([
-  { id: 'ticket', title: '票务信息' },
-  { id: 'location', title: '位置及交通' },
-  { id: 'notice', title: '入馆提示' },
-  { id: 'store', title: '文创商店' }
-])
+import STabs from '@/components/STabs.vue'
+import * as vAndAApi from '@/api/vAndA'
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const category = ref([])
+const datas = ref({
+  data: [],
+  total: 0,
+  page: 1,
+  pageSize: 12
+})
 
-const list = ref([
-  { id: '1', title: '这边显示活动名称', type: '活动', time: '2025-01-01', address: '成都博物馆', content: '这边显示活动内容', status: '预约中' },
-  { id: '2', title: '这边显示活动名称', type: '活动', time: '2025-01-01', address: '成都博物馆', content: '这边显示活动内容', status: '进行中'  },
-  { id: '3', title: '这边显示活动名称', type: '活动', time: '2025-01-01', address: '成都博物馆', content: '这边显示活动内容', status: '已结束' },
-  { id: '4', title: '这边显示活动名称', type: '活动', time: '2025-01-01', address: '成都博物馆', content: '这边显示活动内容', status: '已结束' }
-])
+async function getCategory() {
+  const { data, code, msg } = await vAndAApi.getActivityCategory()
+  if (code === 1) {
+    data.map(e=>{
+      if (e.children && e.children.length > 0) {
+        e.children.unshift({
+          id: e.id,
+          name: e.name
+        })
+      }
+    })
+    category.value = data
+    getData(1)
+  } else {
+    console.log(data, msg)
+  }
+}
+
+async function getData(page, pageSize = 12, categoryId) {
+  const { data, code, msg } = await vAndAApi.getActivityGwList({ page, pageSize, categoryId })
+  if (code === 1) {
+    datas.value.list = data.list 
+    datas.value.total = data.total
+    datas.value.page = page
+    datas.value.pageSize = pageSize
+  } else {
+    console.log(data, msg)
+  }
+}
+getCategory()
 
 const handlePageChange = (page) => {
-  console.log(page)
+  getData(page)
 }
+
+const handleClick = (id) => {
+  router.push(`/visitsAndActivities/activitie/${id}`)
+}
+
+const handleSollChange = (id) => {
+  getData(1, 12, id)
+}
+
 </script>
 
 <template>
-  <div class="">
+  <div class="bg-f8">
     <div class="banner-bg">
       <SBreadcrumb class="breadcrumb-box" />
-      <img src="@/assets/img/other/banner.png" width="100%" alt="banner" />
+      <h1 class="banner-title">活动</h1>
+      <img src="@/assets/img/other/collect/banner.png" width="100%" alt="banner" />
+      <STabs ref="childRef" class="tabs-top" :isBlack="true" :titleKey="'name'" :childKey="'children'" :list="category" @change="handleSollChange" />
     </div>
 
     <!-- 列表 -->
-    
-    <div class="activity-container w1440">
+    <div class="news-container w1440">
       <div class="activity-list">
-        <div class="activity-item" v-for="item in list" :key="item.id">
+        <div class="activity-item" v-for="item in datas.list" :key="item.id" @click="handleClick(item.id)">
           <div class="activity-item-left">
-            <img src="@/assets/img/home/banner1.png" alt="活动图片" />
+            <img :src="item.images_url" :alt="item.title" />
           </div>
           <div class="activity-item-right">
-            <h3 class="title">{{ item.title }}</h3>
-            <div class="info">
-              <div class="info-item">
-                <span class="label">类型：</span>
-                <span class="value">{{ item.type }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">时间：</span>
-                <span class="value">{{ item.time }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">地址：</span>
-                <span class="value">{{ item.address }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">内容：</span>
-                <span class="value">{{ item.content }}</span>
-              </div>
-            </div>
-            <div class="status" :class="item.status">{{ item.status }}</div>
+            <h3 class="title f26">{{ item.title || '暂无标题' }}</h3>
+            <p class="f20">类型：{{ item.classify_name || '-' }}</p>
+            <p class="f20">时间：{{ item.activity_time_start || '-' }} ~ {{ item.activity_time_end || '-' }}</p>
+            <p class="f20">地址：{{ item.activity_address || '-' }}</p>
+            <p class="f20">{{ item.activity_synopsis || '-' }}</p>
+            <div class="status" :class="item.status_name">{{ item.status_name }}</div>
           </div>
         </div>
       </div>
-      <SPagination @page-change="handlePageChange" />
+      <SPagination :currentPage="datas.page" :pageSize="datas.pageSize" :total="datas.total" @page-change="handlePageChange" />
     </div>
   </div>
 </template>
 
 <style scoped>
-.visit-guide {
+.bg-f8 {
+  background: #f8f8f8;
 
 }
 .banner-bg {
   position: relative;
 }
-.breadcrumb-box {
-  position: absolute;
-  color: #fff;
-  margin-left: 240px;
-  margin-top: 40px;
+
+.banner-bg img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
 }
 
-.activity-container {
-  padding: 40px 0;
-  margin: 0 auto;
+.breadcrumb-box {
+  position: absolute;
+  /* color: #fff; */
+  margin-left: 40px;
+  top: 20px;
 }
+
+.banner-title {
+  position: absolute;
+  left: 40px;
+  top: 80px;
+  color: #E24021;
+  font-size: 56px;
+  font-weight: bold;
+}
+
+.tabs-top{
+  position: absolute;
+  bottom: 20px;
+  left: 50px;
+  z-index: 100;
+}
+
+.content {
+  min-height: 500px;
+  padding: 40px 0;
+}
+
+.news-container {
+  padding: 40px 0;
+}
+
 
 .activity-list {
   display: flex;
@@ -93,10 +147,10 @@ const handlePageChange = (page) => {
 .activity-item {
   display: flex;
   gap: 30px;
-  padding: 20px;
+  height: 360px;
   background: #fff;
-  border: 1px solid #E2E8F0;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .activity-item:hover {
@@ -105,14 +159,14 @@ const handlePageChange = (page) => {
 }
 
 .activity-item-left {
-  width: 300px;
-  height: 200px;
+  width: 360px;
+  height: 360px;
   overflow: hidden;
 }
 
 .activity-item-left img {
-  width: 100%;
-  height: 100%;
+  width: 360px;
+  height: 360px;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -124,7 +178,7 @@ const handlePageChange = (page) => {
 .activity-item-right {
   flex: 1;
   position: relative;
-  padding: 10px 0;
+  padding: 40px 0;
 }
 
 .title {
@@ -156,15 +210,24 @@ const handlePageChange = (page) => {
 }
 
 .status {
-  position: absolute;
-  top: 10px;
-  right: 20px;
+  margin-top: 20px;
+  display: inline-block;
   padding: 5px 15px;
   border-radius: 4px;
   font-size: 14px;
 }
 
+.status.待报名 {
+  color: #fff;
+  background: #616161;
+}
+
 .status.预约中 {
+  color: #fff;
+  background: #658A98;
+}
+
+.status.待开始 {
   color: #fff;
   background: #658A98;
 }

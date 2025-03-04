@@ -6,9 +6,10 @@ import { Navigation as CarouselNavigation } from 'vue3-carousel'
 import SImg from '../components/SImg.vue'
 import SMoreBotton from '../components/SMoreBotton.vue'
 import SVisualAnimation from '../components/SVisualAnimation.vue'
-import { getBannerList } from '../api/home'
 import * as homeApi from '@/api/home'
-
+import * as digitalApi from '@/api/digital'
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const carouselConfig = {
   itemsToShow: 1,
   wrapAround: true
@@ -18,41 +19,117 @@ const carouselConfig2 = {
   wrapAround: true
 }
 
-const traffic = ref([
-  {
-    id: 1,
-    name: '火车', 
-    text: '111T21路、T40路、T1路、T40路快线、T150路等',
-    img: '../assets/img/icon/ce1.png'
-  },
-  {
-    id: 2,
-    name: '地铁', 
-    text: '222T21路、T40路、T1路、T40路快线、T150路等',
-    img: '../assets/img/icon/ce2.png'
-  },
-  {
-    id: 3,
-    name: '汽车', 
-    text: '333T21路、T40路、T1路、T40路快线、T150路等',
-    img: '../assets/img/icon/ce3.png'
-  },
-])
+const bannerList = ref([])
 
-const trafficText = ref(traffic.value[0].text)
+const trafficObj = ref({
+  openTime: '',
+  traffic: [
+    {
+      id: 1,
+      name: '火车', 
+      text: '111T21路、T40路、T1路、T40路快线、T150路等',
+      img: '../assets/img/icon/ce1.png'
+    },
+    {
+      id: 2,
+      name: '地铁', 
+      text: '222T21路、T40路、T1路、T40路快线、T150路等',
+      img: '../assets/img/icon/ce2.png'
+    },
+    {
+      id: 3,
+      name: '汽车', 
+      text: '333T21路、T40路、T1路、T40路快线、T150路等',
+      img: '../assets/img/icon/ce3.png'
+    },
+  ]
+})
+
+const cultureList = ref([])
+
+const newsList = ref([])
+
+const activityObj = ref({})
+
+const specialExhibitionList = ref([])
+
+const trafficText = ref('')
 const showTraffic = (item) => {
   trafficText.value = item
 }
 
 async function getData() {
-  const { data, success, message } = await homeApi.getBannerList()
-  if (success) {
-    console.log(data)
+  const { data, code, msg } = await homeApi.getBannerList()
+  if (code === 1) {
+    bannerList.value = data.list
+    console.log(data, 'data')
   } else {
-    console.log(message)
+    console.log(msg)
   }
 }
+async function getOpenTimeAndTraffic() {
+  const { data, code, msg } = await homeApi.getOpenTimeAndTraffic()
+  if (code === 1) {
+    trafficObj.value = data
+    trafficObj.value.traffic = data.traffic.map(item => ({
+      type: item.type,
+      value: item.value,
+      img: item.type === '地铁' ? '../assets/img/icon/ce1.png' :  item.type === '公交' ? '../assets/img/icon/ce3.png' : '../assets/img/icon/ce2.png'
+    }))
+    console.log(trafficObj.value, 'trafficObj')
+    trafficText.value = data.traffic[0].value
+  } else {
+    console.log(msg)
+  }
+}
+
+async function getNewsListIndex() {
+  const { data, code, msg } = await homeApi.getNewsListIndex()
+  if (code === 1) {
+    newsList.value = data
+  } else {
+    console.log(msg)
+  }
+}
+
+async function getActivityIndex() {
+  const { data, code, msg } = await homeApi.getActivityIndex()
+  if (code === 1) {
+    activityObj.value = data
+  } else {
+    console.log(msg)
+  }
+}
+
+async function getSpecialExhibition() {
+  const { data, code, msg } = await homeApi.getSpecialExhibition()
+  if (code === 1) {
+    specialExhibitionList.value = data
+  } else {
+    console.log(msg)
+  }
+}
+
+async function getCultureList() {
+  const { data, code, msg } = await digitalApi.getCultureList()
+  if (code === 1) {
+    data.list.length = 3
+    cultureList.value = data.list
+  } else {
+    console.log(msg)
+  }
+}
+
 getData()
+getOpenTimeAndTraffic()
+getCultureList()
+getNewsListIndex()
+getActivityIndex()
+getSpecialExhibition()
+
+const handleClick = (url) => {
+  router.push(url)
+}
 
 
 </script>
@@ -62,8 +139,8 @@ getData()
     <!-- 顶部 -->
     <!-- 1 -->
     <Carousel class="banner-one" v-bind="carouselConfig">
-      <Slide v-for="slide in 10" :key="slide">
-        <img alt="四川名人馆" class="banner-one" src="@/assets/img/home/banner1.png" width="100vw" height="100vh" />
+      <Slide v-for="slide in bannerList" :key="slide">
+        <img :alt="slide.remark" class="banner-one" :src="slide.domain_image" width="100vw" height="100vh" />
       </Slide>
       <template #addons>
         <Pagination />
@@ -74,16 +151,16 @@ getData()
       <div class="x-bc w1390 tc pt64">
         <div>
           <h4 class="f32 mb20">开放时间</h4>
-          <p class="f32 mb10"><SImg style="margin: -5px 10px;vertical-align: baseline;" src="../assets/img/icon/time.png" width="30" height="30" />10:00 - 17:00</p>
-          <p class="f18 mb10">17:00后停止入场，基本陈列免预约，除国定节假日外，周一闭馆</p>
+          <p class="f32 mb10"><SImg style="margin: -5px 10px;vertical-align: baseline;" src="../assets/img/icon/time.png" width="30" height="30" />{{ trafficObj.openTime.open_start_time }} - {{ trafficObj.openTime.open_end_time }}</p>
+          <p class="f18 mb10">{{ trafficObj.openTime.open_time }}</p>
           <p class="f18"><img class="mr5" style="vertical-align: baseline;" src="@/assets/img/icon/address.png" width="16" height="16" />四川省成都市天府新区雅州路2936号</p>
         </div>
-        <div>
+        <div class="traffic-right">
           <h4 class="f32 mb20">交通路线</h4>
           <div class="x-bc">  
-            <div class="derlineBlack" v-for="item in traffic" :key="item.id"><SImg :src="item.img" width="80" height="80"  @mouseenter="showTraffic(item.text)" /></div>
+            <div class="derlineBlack" v-for="item in trafficObj.traffic" :key="item.id"><SImg :src="item.img" width="80" height="80"  @mouseenter="showTraffic(item.value)" /></div>
           </div>
-          <p class="f18 mt30">{{trafficText}}</p>
+          <p class="f18 mt30" v-html="trafficText"></p>
         </div>
       </div>
       <div class="tc mt40"><SMoreBotton class="mb35" /></div>
@@ -93,42 +170,19 @@ getData()
       <h2 class="tc f36">文创商店</h2>
       
       <div class="store-grid">
-        <!-- 书籍区块 -->
-        <div class="store-item">
+        <div class="store-item" v-for="item in cultureList" :key="item.id" @click="handleClick(`/digitalSpace/index/${item.id}`)">
           <div class="store-img">
-            <img src="@/assets/img/home/banner3.png" alt="书籍" />
+            <img :src="item.original_img" :alt="item.goods_name" />
           </div>
           <div class="store-info">
-            <h3 class="f24">书籍</h3>
-            <p class="f16">精选历史文化典籍</p>
-          </div>
-        </div>
-
-        <!-- 展览衍生品区块 -->
-        <div class="store-item">
-          <div class="store-img">
-            <img src="@/assets/img/home/banner31.png" alt="展览衍生" />
-          </div>
-          <div class="store-info">
-            <h3 class="f24">展览衍生</h3>
-            <p class="f16">展览主题文创产品</p>
-          </div>
-        </div>
-
-        <!-- IP衍生品区块 -->
-        <div class="store-item">
-          <div class="store-img">
-            <img src="@/assets/img/home/banner32.png" alt="IP衍生" />
-          </div>
-          <div class="store-info">
-            <h3 class="f24">IP衍生</h3>
-            <p class="f16">特色文化创意产品</p>
+            <h3 class="f24">{{item.goods_name}}</h3>
+            <p class="f16">{{ item.goods_remark }}</p>
           </div>
         </div>
       </div>
 
       <div class="tc mt30">
-        <SMoreBotton />
+        <SMoreBotton @click="handleClick(`/digitalSpace/index`)" />
       </div>
     </SVisualAnimation>
 
@@ -140,7 +194,7 @@ getData()
       <div class="exhibition-content">
         <!-- 左侧图片 -->
         <div class="exhibition-image">
-          <img src="@/assets/img/home/banner4.png" alt="常设展览" />
+          <img class="cp" src="@/assets/img/home/banner4.png" alt="常设展览" @click="handleClick(`/digitalSpace/index`)" />
         </div>
         
         <!-- 右侧信息 -->
@@ -148,27 +202,12 @@ getData()
           <div class="info-list">
             <div class="list-head display-flex-be mb20">
               <h3>资讯/公告</h3>
-              <SMoreBotton style="color: #333; background: #fff;" />
+              <SMoreBotton style="color: #333; background: #fff;" @click="handleClick(`/mediaCenter`)" />
             </div>
-            <div class="list-item">
+            <div class="list-item" v-for="item in newsList" :key="item.id" @click="handleClick(`/mediaCenter/messaget/${item.id}`)">
               <span class="date">【展览时间】</span>
-              <span class="content">"花蕊夫人"专题展览展厅</span>
-              <span class="time">[2024-12-31]</span>
-            </div>
-            <div class="list-item">
-              <span class="date">【展览地点】</span>
-              <span class="content">"花蕊夫人"专题展览展厅</span>
-              <span class="time">[2024-12-31]</span>
-            </div>
-            <div class="list-item">
-              <span class="date">【展览内容】</span>
-              <span class="content">1号-17号展厅为基本陈列展区，18号展厅为临时展览</span>
-              <span class="time">[2024-12-31]</span>
-            </div>
-            <div class="list-item">
-              <span class="date">【温馨提示】</span>
-              <span class="content">参观博物馆需提前预约，每日接待量视情况而定</span>
-              <span class="time">[2024-12-31]</span>
+              <span class="content">{{ item.title }}</span>
+              <span class="time">[{{ item.create_time }}]</span>
             </div>
           </div>
 
@@ -180,12 +219,12 @@ getData()
             <div class="jyhd-box display-flex-be f18">
               <img height="200px" src="@/assets/img/home/banner4.png">
               <div class="jyhd-item">
-                <h4 class="f24 ellipsis-1">古器物修复工坊</h4>
-                <p class="mt10 ellipsis-1">零距离接触文物修复工作，体验传统修复记忆</p>
-                <p class="ellipsis-1">时间地点：文创中心 / 14:00-16:00</p>
+                <h4 class="f24 ellipsis-1">{{activityObj.title}}</h4>
+                <p class="mt10 ellipsis-1">{{activityObj.activity_synopsis}}</p>
+                <p class="ellipsis-1">时间地点：{{ activityObj.activity_address }} / {{activityObj.activity_time_start}} 至 {{activityObj.activity_time_start}}</p>
                 <div class="display-flex-be mt60">
-                  <p class="ml10">￥128</p>
-                  <SMoreBotton title="立即报名" style="color: #333; background: #fff;" />
+                  <p class="ml10">￥{{activityObj.sign_price}}</p>
+                  <SMoreBotton title="立即报名" style="color: #333; background: #fff;" @click="handleClick(`/visitsAndActivities/activitie/${activityObj.id}`)" />
                 </div>
               </div>
             </div>
@@ -195,50 +234,20 @@ getData()
     </div>
 
     <!-- 5 -->
-    <div class="special-exhibition">
+    <SVisualAnimation animation="animate__fadeInDown"  class="special-exhibition">
       <h2 class="tc f36">特别展览</h2>
       
       <Carousel v-bind="{ ...carouselConfig2, gap: 16, autoplay: 3000, snapAlign: 'start' }" class="special-carousel">
-        <Slide>
+        <Slide v-for="slide in specialExhibitionList" :key="slide" @click="handleClick(`/visitsAndActivities/visits/${slide.id}`)">
           <div class="special-item">
-            <img src="@/assets/img/home/haibao4.png" alt="灵影仙踪" />
+            <img :src="slide.domain_image" :alt="slide.title" />
             <div class="special-info">
-              <h3>灵影仙踪</h3>
-              <p>新春特别展览</p>
+              <h3>{{slide.title}}</h3>
+              <p>{{slide.period}}</p>
+              <p>{{slide.hall}}</p>
             </div>
           </div>
         </Slide>
-        
-        <Slide>
-          <div class="special-item">
-            <img src="@/assets/img/home/haibao3.png" alt="霓裳魅影" />
-            <div class="special-info">
-              <h3>霓裳魅影</h3>
-              <p>古代服饰艺术展</p>
-            </div>
-          </div>
-        </Slide>
-        
-        <Slide>
-          <div class="special-item">
-            <img src="@/assets/img/home/haibao2.png" alt="寰宇东西" />
-            <div class="special-info">
-              <h3>寰宇东西</h3>
-              <p>马可波罗眼中的中国世界</p>
-            </div>
-          </div>
-        </Slide>
-        
-        <Slide>
-          <div class="special-item">
-            <img src="@/assets/img/home/haibao1.png" alt="木石双清" />
-            <div class="special-info">
-              <h3>木石双清</h3>
-              <p>江南石供与清派盆景展</p>
-            </div>
-          </div>
-        </Slide>
-
         <template #addons>
           <CarouselNavigation>
             <template #prev>
@@ -254,7 +263,7 @@ getData()
       <div class="tc mt30">
         <SMoreBotton />
       </div>
-    </div>
+    </SVisualAnimation>
 
   </main>
 </template>
@@ -291,6 +300,15 @@ getData()
   cursor: pointer;
 }
 
+.traffic-right {
+  width: 600px;
+}
+
+.traffic-right .x-bc{
+  width: 450px;
+  margin: 0 auto;
+}
+
 main{
   box-sizing: border-box;
 }
@@ -316,6 +334,7 @@ main{
   overflow: hidden;
   border-radius: 8px;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .store-item:hover {
@@ -410,6 +429,7 @@ main{
   display: flex;
   margin-bottom: 20px;
   line-height: 1.3;
+  cursor: pointer;
 }
 
 .list-item:last-child {
@@ -428,12 +448,12 @@ main{
 .jyhd-box{
   background: #00000030;
   padding: 10px 20px;
+  color: #fff;
 }
 
 .jyhd-item{
   flex: 1;
   margin-left: 10px;
-
 }
 
 /* 5 */
@@ -454,6 +474,7 @@ main{
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .special-item:hover {
@@ -463,7 +484,7 @@ main{
 
 .special-item img {
   width: 100%;
-  height: auto;
+  height: 790px;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -478,9 +499,14 @@ main{
   left: 0;
   right: 0;
   padding: 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  background: rgba(0,0,0,0.5);
+  // background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
   color: white;
-  text-align: center;
+  opacity: 0;
+}
+
+.special-item:hover .special-info {
+  opacity: 1;
 }
 
 .special-info h3 {

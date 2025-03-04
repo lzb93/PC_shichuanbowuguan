@@ -5,14 +5,21 @@ const menuItems = ref([]);
 const router = useRouter();
 // 定义打印所有路由数据的方法
 const printAllRoutes = () => {
-  const allRoutes = router.options.routes;
+  const allRoutes = [
+      { 
+          path: '/',
+          name: 'Home',
+          meta: {
+              title: '首页'
+          } 
+      },
+      ...router.options.routesTree
+  ]
   menuItems.value = allRoutes
-  console.log('所有路由数据:', allRoutes);
 };
 onBeforeMount(() => {
   // 在组件挂载前更新消息
   printAllRoutes()
-  console.log('onBeforeMount 钩子函数执行');
 });
 
 const activeMenuItem = ref(null)
@@ -39,7 +46,8 @@ defineProps({
     <div class="header-main">
       <!-- Logo区域 -->
       <div class="logo">
-        <img src="@/assets/img/logo.png" alt="四川名人馆" />
+        <img v-if="isHome" src="@/assets/img/logo3.png" alt="四川名人馆" />
+        <img v-else src="@/assets/img/logo2.png" alt="四川名人馆" />
       </div>
 
       <!-- 主导航菜单 -->
@@ -49,7 +57,7 @@ defineProps({
               :key="item.name"
               @mouseenter="showSubMenu(item)"
               @mouseleave="hideSubMenu">
-            <router-link v-if="!item.hide" class="derline" :to="item.path">{{ item.meta.title }}</router-link>
+            <router-link v-if="!item.hide" :class="isHome ? 'derline' : 'derlineBlack'" :to="item.path">{{ item.meta.title }}</router-link>
             
             <!-- 子导航菜单 -->
             <div v-if="item.children && item.children.length && activeMenuItem === item" 
@@ -154,12 +162,12 @@ defineProps({
   z-index: 8;
   width: 100vw;
   height: 50px;
-  background: linear-gradient( 180deg, rgba(96,29,16,0.8) 0%, rgba(96,29,16,0) 100%);
+  background: linear-gradient( 180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
 }
 .main-nav-after div {
   width: 100%;
   height: 50px;
-  background: linear-gradient( 180deg, rgba(96,29,16,0.8) 0%, rgba(96,29,16,0) 100%);
+  background: linear-gradient( 180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
 }
 
 .sub-nav {
@@ -192,7 +200,6 @@ defineProps({
 }
 
 .sub-nav a {
-  color: white;
   text-decoration: none;
   font-size: 14px;
   white-space: nowrap;
@@ -204,6 +211,15 @@ defineProps({
   opacity: 0.8;
 }
 
+.is-home .main-nav-after {
+  background: linear-gradient( 180deg, rgba(96,29,16,0.8) 0%, rgba(96,29,16,0) 100%);
+}
+.is-home .main-nav-after div {
+  background: linear-gradient( 180deg, rgba(96,29,16,0.8) 0%, rgba(96,29,16,0) 100%);
+}
+.is-home .sub-nav a {
+  color: #ffffff;
+}
 /* 激活状态样式 */
 .router-link-active {
   font-weight: bold;

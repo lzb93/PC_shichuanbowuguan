@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineProps, defineEmits, watch } from 'vue';
 
 // 定义组件接收的 props
 const props = defineProps({
@@ -16,15 +16,23 @@ const props = defineProps({
   // 总记录数
   total: {
     type: Number,
-    default: 150
+    default: 0
   }
 });
-
+console.log(props, 'props')
 // 定义组件触发的事件
 const emits = defineEmits(['page-change']);
 
 // 计算总页数
-const totalPages = Math.ceil(props.total / props.pageSize);
+let totalPages = Math.ceil(props.total / props.pageSize);
+
+watch([() => props.currentPage, () => props.pageSize, () => props.total], () => {
+  totalPages = Math.ceil(props.total / props.pageSize)
+  window.scrollTo({
+    top: 0,
+    // behavior: 'smooth' // 平滑滚动效果
+  });
+});
 
 // 跳转页码输入框绑定的值
 const jumpPage = ref('');

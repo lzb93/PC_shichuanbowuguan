@@ -1,44 +1,12 @@
 <script setup>
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router'
-import image1 from '@/assets/img/icon/icons (1).png';
-import image2 from '@/assets/img/icon/icons (2).png';
-import image3 from '@/assets/img/icon/icons (3).png';
-import image4 from '@/assets/img/icon/icons (4).png';
-import image5 from '@/assets/img/icon/icons (5).png';
-import image6 from '@/assets/img/icon/icons (6).png';
-import image7 from '@/assets/img/icon/icons (7).png';
-import image8 from '@/assets/img/icon/icons (8).png';
-import image9 from '@/assets/img/icon/icons (9).png';
-const imgs = ref([
-  {
-    img: image1,
-  },
-  {
-    img: image2,
-  },
-  {
-    img: image3,
-  },
-  {
-    img: image4,
-  },
-  {
-    img: image5,
-  },
-  {
-    img: image6,
-  },
-  {
-    img: image7,
-  },
-  {
-    img: image8,
-  },
-  {
-    img: image9,
-  }
-])
+import useDataStore from '@/stores'
+
+const dataStore = useDataStore();
+const systemData = ref(dataStore.systemData)
+console.log(systemData)
+const imgs = ref(dataStore.mediaList)
 const urls = ref([
   {
     title: '网站地图',
@@ -70,8 +38,14 @@ const urls = ref([
   <footer>
     <p class="top-p">四川名人馆融媒矩阵:</p>
     
-    <div class="img-box"> 
-      <img v-for="(item, index) in imgs" :key='index' :src="item.img" width="60" height="60" />
+    <div class="img-box">
+      <div v-for="(item, index) in imgs" :key='index' class="img-item">
+        <img :src="item.icon" width="60" height="60" />
+        <div class="qrcode-box">
+          <img :src="item.qrcode" width="100%" height="100%" />
+          <img class="bottom-img" src="@/assets/img/icon/bottom.png" width="13" height="7" />
+        </div>
+      </div>
     </div>
     <div class="url-warp">
       <div class="url-box" v-for="(item, index) in urls" :key='index' >
@@ -79,7 +53,7 @@ const urls = ref([
         <a :href="item.url">{{item.title}}</a>
       </div>
     </div>
-    <p class="tc">Copyright 2011-2024 四川名人馆 All Rights Reserved 川ICP备12345678号 <span style="margin-left: 50px;">技术支持：先行网络服务有限公司</span></p>
+    <p class="tc"><a :href="systemData.icp_url?.value" target="_blank">{{systemData.icp_permit?.value}}</a> <span style="margin-left: 50px;">技术支持：先行网络服务有限公司</span></p>
     <img alt="四川名人馆" class="logo" src="@/assets/img/logo.png" width="142" height="40" />
   </footer>
 </template>
@@ -109,6 +83,33 @@ footer{
   justify-content: center;
   gap: 67px;
   margin-bottom: 84px;
+  cursor: pointer;
+  position: relative;
+  img {
+    border-radius: 4px;
+  }
+}
+.img-item{
+  position: relative;
+}
+.qrcode-box{
+  position: absolute;
+  bottom: 70px;
+  left: -30px;
+  width: 120px;
+  height: 120px;
+  background: #ffffff;
+  padding: 5px;
+  display: none;
+  text-align: center;
+  .bottom-img{
+    vertical-align: super;
+  }
+}
+.img-item:hover{
+  .qrcode-box{
+    display: block;
+  }
 }
 .url-warp{
   border-top: 1px solid #404040;

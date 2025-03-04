@@ -47,6 +47,15 @@ const scrollToBottom = () => {
   <div class="chat-container">
     <!-- 聊天消息显示区域 -->
     <div class="chat-messages" ref="messagesRef">
+      <div class="assistant-info">
+        <div class="assistant-avatar">
+          <img src="@/assets/img/other/collect/head2.png" alt="助手头像" />
+        </div>
+        <div class="assistant-name">
+          <h3>知识助手·小莉</h3>
+          <p>您可向我咨询您想要知道的知识，我会毫无保留的与您分享。</p>
+        </div>
+      </div>
       <div
         v-for="(message, index) in messages"
         :key="index"
@@ -60,13 +69,15 @@ const scrollToBottom = () => {
     </div>
     <!-- 消息输入区域 -->
     <div class="chat-input">
-      <input
-        v-model="inputMessage"
-        type="text"
-        placeholder="输入消息..."
-        @keyup.enter="sendMessage"
-      />
-      <button @click="sendMessage">发送</button>
+      <div class="chat-input-box">
+        <input
+          v-model="inputMessage"
+          type="text"
+          placeholder="输入消息..."
+          @keyup.enter="sendMessage"
+        />
+        <button @click="sendMessage"><img style="margin-right: 5px;" src="@/assets/img/other/collect/icon2.png" width="24" height="24" />发送</button>
+      </div>
     </div>
   </div>
 </template>
@@ -76,8 +87,9 @@ const scrollToBottom = () => {
   display: flex;
   flex-direction: column;
   height: 400px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0px 4px 12px 0px rgba(0,0,0,0.25);
+  border-radius: 2px 2px 2px 2px;
   overflow: hidden;
 }
 
@@ -86,6 +98,46 @@ const scrollToBottom = () => {
   padding: 10px;
   overflow-y: auto;
 }
+
+/* 头部 */
+
+.assistant-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: auto;
+  margin: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.assistant-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.assistant-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.assistant-name h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: normal;
+}
+
+.assistant-name p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 聊天区 */
 
 .user-message {
   display: flex;
@@ -98,6 +150,7 @@ const scrollToBottom = () => {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  padding: 30px;
 }
 
 .avatar {
@@ -113,8 +166,8 @@ const scrollToBottom = () => {
 }
 
 .user-message .message-content {
-  background-color: #007bff;
-  color: white;
+  background: #EDF5F8;
+  border-radius: 8px 8px 8px 8px;
 }
 
 .other-message .message-content {
@@ -125,27 +178,44 @@ const scrollToBottom = () => {
 .chat-input {
   display: flex;
   padding: 10px;
+  margin: 0 30px;
   border-top: 1px solid #ccc;
+}
+
+.chat-input-box {
+  display: flex;
+  align-items: center;
+  width: 800px;
+  height: 64px;
+  margin: 30px auto;
+  border-radius: 32px;
+  border: 1px solid #5A715F;
 }
 
 .chat-input input {
   flex: 1;
   padding: 5px;
-  border: 1px solid #ccc;
+  border: none;
+  height: 48px;
   border-radius: 4px;
-  margin-right: 10px;
+  margin: 0 20px;
+  font-size: 16px;
 }
 
 .chat-input button {
-  padding: 5px 10px;
-  background-color: #007bff;
-  color: white;
+  width: 120px;
+  text-align: center;
+  height: 64px;
+  background: #5A715F;
   border: none;
-  border-radius: 4px;
+  border-radius: 0px 35px 35px 0px;
   cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: none;
 }
 
 .chat-input button:hover {
-  background-color: #0056b3;
+  opacity: 0.8;
 }
 </style>

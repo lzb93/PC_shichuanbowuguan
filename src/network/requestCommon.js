@@ -1,44 +1,38 @@
 import axios from 'axios';
 
+// 创建一个 axios 实例
 const service = axios.create({
-    baseURL: '/', // api的base_url
-    timeout: 20000, // 请求超时时间
+    baseURL: '', // 你的 API 基础 URL，根据实际情况修改
+    timeout: 15000 // 请求超时时间
 });
 
 service.defaults.headers = {
-    'Content-type': 'application/json; charset=utf-8',
+    'Content-Type': 'multipart/form-data',
+    // 'Content-type': 'application/json; charset=utf-8',
     // Accept: 'application/json',
     'XX-Api-Version': '1',
     'XX-Device-Type': 'pc',
     'XX-BusinessID': 80,
     'XX-Lang': 'cn',
     'XX-Domain': 'mrg.com',
+    // 'XX-Token': 'fb399eb024fff8d42a5e3c56fbd29dd2d12ece9d'
 }
 
-// 默认头部属性
-service.defaults.validateStatus = status => {
-    return status < 1000
-}
-
-// request interceptor
+// 请求拦截器
 service.interceptors.request.use(
     config => {
-        // if (!config.headers['Authorization']) {
-        //   config.headers['Authorization'] = `Bearer ${nestarkAuth.token}`
-        //   console.log(projectId, 'projectId')
-        //   config.headers['projectId'] = projectId
-        // }
-        // // 如果有 projectId
-        // const curProject = store.state.app.curProject
-        // config.headers.projectId = curProject && curProject.source.wnlProjectId || 6
-        return config
+        // 设置请求头为 form-data
+        // config.headers['Content-Type'] = 'multipart/form-data';
+        return config;
     },
     error => {
-        console.log(error)
-        return Promise.reject(error)
+        // 处理请求错误
+        console.log(error);
+        return Promise.reject(error);
     }
-)
+);
 
+// 响应拦截器
 service.interceptors.response.use(
     response => {
         const res = response.data
@@ -67,9 +61,11 @@ service.interceptors.response.use(
                 showErrMsg(res)
                 return Promise.reject(res)
             case 0:
-                return res.data
+                return res
+            case 1:
+                return res
             case 200:
-                return res.data
+                return res
             default:
                 showErrMsg(res)
                 return Promise.reject(res)
@@ -85,4 +81,24 @@ function showErrMsg(data) {
     console.log(data)
 }
 
-export default service;
+/**
+ * 封装 form-data 请求方法
+ * @param {string} url 请求的 URL
+ * @param {Object} data 请求的数据
+ * @param {Object} config 其他配置项
+ * @returns {Promise} 返回一个 Promise 对象
+ */
+const formDataRequest = ({ url, params = {}, method = 'post', config = {} }) => {
+    // 创建一个 FormData 对象
+    const formData = new FormData();
+    // 将数据添加到 FormData 中
+    for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+            formData.append(key, params[key]);
+        }
+    }
+    // 发送 POST 请求
+    return service[method](url, formData, config);
+};
+
+export default formDataRequest;

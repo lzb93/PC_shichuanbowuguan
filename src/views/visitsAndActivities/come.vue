@@ -1,6 +1,55 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import SBreadcrumb from '@/components/SBreadcrumb.vue'
+import SImg from '@/components/SImg.vue'
+import * as vAndAApi from '@/api/vAndA'
+import * as digitalApi from '@/api/digital'
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const datas = ref({
+  play_notice: '',
+  lat: '',
+  lng: '',
+  traffic: []
+})
+const cultureList = ref([])
+
+async function getCultureList() {
+  const { data, code, msg } = await digitalApi.getCultureList()
+  if (code === 1) {
+    data.list.length = 3
+    cultureList.value = data.list
+  } else {
+    console.log(msg)
+  }
+}
+
+async function getData() {
+  const { data, code, msg } = await vAndAApi.getVisit()
+  if (code === 1) {
+    datas.value = data
+    datas.value.traffic = data.traffic.map(item => ({
+      type: item.type,
+      value: item.value,
+      img: item.type === '地铁' ? '../assets/img/icon/ce1.png' :  item.type === '公交' ? '../assets/img/icon/ce3.png' : '../assets/img/icon/ce2.png'
+    }))
+  } else {
+    console.log(data, msg)
+  }
+}
+async function getList() {
+  const { data, code, msg } = await vAndAApi.getVisit()
+  if (code === 1) {
+    datas.value = data
+  } else {
+    console.log(data, msg)
+  }
+}
+getData()
+getCultureList()
+const handleClick = (url) => {
+  router.push(url)
+}
 
 const navItems = ref([
   { id: 'ticket', title: '票务信息' },
@@ -56,6 +105,7 @@ onMounted(() => {
   <div class="visit-guide">
     <div class="banner-bg">
       <SBreadcrumb class="breadcrumb-box" />
+      <h1 class="banner-title">到访</h1>
       <img src="@/assets/img/other/banner.png" width="100%" alt="banner" />
     </div>
     
@@ -168,28 +218,14 @@ onMounted(() => {
           <h3 class="f32 tc">位置及交通</h3>
           <div class="location-info">
             <div class="map-container">
-              <img src="@/assets/img/home/banner1.png" alt="位置地图" />
+              <img src="@/assets/img/other/address.png" alt="位置地图" />
             </div>
             <div class="transport-info">
-              <div class="transport-item">
-                <img src="@/assets/img/icon/ce1.png" width="60" height="60" alt="公交" />
+              <div class="transport-item" v-for="item in datas.traffic" :key="item.type">
+                <SImg :src="item.img" width="60" height="60" alt="公交" />
                 <div>
-                  <span>公交:</span>
-                  <p>乘坐123路、125路、196路至某某站点，沿某某路向西步行200米</p>
-                </div>
-              </div>
-              <div class="transport-item">
-                <img src="@/assets/img/icon/ce1.png" width="60" height="60" alt="地铁" />
-                <div>
-                  <span>地铁:</span>
-                  <p>乘坐九号线至环球金融站，由A号出口，沿某某路向西步行100米</p>
-                </div>
-              </div>
-              <div class="transport-item">
-                <img src="@/assets/img/icon/ce1.png" width="60" height="60" alt="自驾" />
-                <div>
-                  <span>自驾:</span>
-                  <p>成都市四川少人体闲门3号车场。</p>
+                  <span>{{item.type}}:</span>
+                  <p v-html="item.value" />
                 </div>
               </div>
             </div>
@@ -200,54 +236,25 @@ onMounted(() => {
         <section id="notice" class="notice-section">
           <div class="notice-info">
             <h3 class="f32 tc">入馆提示</h3>
-            <div class="notice-content">
-              <h4 class="tc f24">严正声明</h4>
-              <p>四川名人馆本展馆在符合国家法律法规的前提下收集和使用用户信息，以日后能更好地为访问者提供服务。私自传播他人个人信息或从事其他非法活动，此类严重违规的参观者将被追究相应的法律责任。</p>
-              
-              <h4>为了您有更好的观展体验，请在预约之前仔细阅读本须知</h4>
-              <ol>
-                <li>开放时间为9:00-18:00(17:00停止入场)，每一时间段需要预约日期时段。</li>
-                <li>为保证人员安全有序疏散，预计预约分时段入场及控制同时段观展总量(每天5000人次)。</li>
-                <li>预约前请确保个人信息填写正确，如有错误将无法进入四川名人馆公众号参观预约平台进行预约。</li>
-                <li>每日限约1次，如不能按预约时间参观，请提前1天取消预约。</li>
-              </ol>
+            <div class="notice-content" v-html="datas.play_notice" />
 
-              <h4 class="tc f24">其他注意事项</h4>
-              <ol>
-                <li>请随身携带证件。</li>
-                <li>保持场所清洁，文明参观。</li>
-                <li>不得携带以下物品：(1)易燃物；(2)水杯不要带；(3)无线耳机为避免打扰其他参观者；(4)携带宠物等。</li>
-                <li>保持场所清洁，文明参观。</li>
-                <li>保持展厅内适当安全距离和小声社交。</li>
-                <li>如有控制群组活动必要时，包括但不限于不能发生对其他参观者造成影响的行为。</li>
-                <li>服务时间和开放时间，由日月和天气类型影响和结果，在现场具体情况进行合作的功能服务及特色商品点，如有疑问请咨询。</li>
-                <li>服从管理，遵守管理示范并且从展厅工作人员的管理。</li>
-                <li>未经允许，请不要对任何人进行录像拍摄。</li>
-                <li>如有其它影响公众安全和公共利益的行为。</li>
-                <li>如有疑问请拨打订票热线********。</li>
-                <li>本规则自2024年2月23日开始执行，如有变更另行通知。</li>
-              </ol>
-            </div>
           </div>
         </section>
 
         <!-- 文创商店 -->
         <section id="store" class="store-section">
-          <div class="store-info">
+          <div class="store-box">
             <h3 class="f32 tc">文创商店</h3>
             <p class="f16 color-999"><img class="mr5" style="vertical-align: baseline;" src="@/assets/img/icon/address.png" width="16" height="16" />四川省成都市天府新区雅州路2936号</p>
             <div class="store-grid">
-              <div class="store-item">
-                <img src="@/assets/img/home/banner1.png" alt="书籍" />
-                <h4>书籍</h4>
-              </div>
-              <div class="store-item">
-                <img src="@/assets/img/home/banner1.png" alt="展览衍生" />
-                <h4>展览衍生</h4>
-              </div>
-              <div class="store-item">
-                <img src="@/assets/img/home/banner1.png" alt="IP衍生" />
-                <h4>IP衍生</h4>
+              <div class="store-item" v-for="item in cultureList" :key="item.id" @click="handleClick(`/digitalSpace/index/${item.id}`)">
+                <div class="store-img">
+                  <img :src="item.original_img" :alt="item.goods_name" />
+                </div>
+                <div class="store-info">
+                  <h3 class="f24">{{item.goods_name}}</h3>
+                  <p class="f16">{{ item.goods_remark }}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -269,6 +276,15 @@ onMounted(() => {
   color: #fff;
   margin-left: 240px;
   margin-top: 40px;
+}
+
+.banner-title {
+  position: absolute;
+  left: 240px;
+  top: 180px;
+  color: #fff;
+  font-size: 56px;
+  font-weight: bold;
 }
 
 .guide-container {
@@ -510,17 +526,19 @@ onMounted(() => {
 .color-999 {
   color: #999;
 }
+
 .store-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 20px;
+  gap: 30px;
+  margin-top: 15px;
 }
 
 .store-item {
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .store-item:hover {
@@ -528,20 +546,27 @@ onMounted(() => {
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-.store-item img {
+.store-img {
   width: 100%;
-  height: 200px;
-  object-fit: cover;
+  height: 300px;
+  overflow: hidden;
 }
 
-.store-item h4 {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 15px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  color: white;
+.store-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.store-item:hover .store-img img {
+  transform: scale(1.05);
+}
+
+.store-info {
+  padding: 20px;
+  background: rgba(255,255,255,0.9);
   text-align: center;
 }
+
 </style>

@@ -105,6 +105,10 @@ th,
 td {
     margin: 0;
     padding: 0;
+    color: inherit;
+}
+
+body {
     color: #313035;
 }
 
@@ -177,6 +181,13 @@ a {
     zoom: 1;
 }
 
+.w90z {
+    width: 100%;
+    padding: 0 56px;
+    margin: 0 auto;
+    zoom: 1;
+}
+
 .w980:before {
     display: table;
     line-height: 0;
@@ -221,6 +232,10 @@ a {
 
 .p5 {
     padding: 5px;
+}
+
+.pl5 {
+    padding-left: 5px;
 }
 
 .p10 {
@@ -413,6 +428,10 @@ a {
 
 .mb35 {
     margin-bottom: 35px;
+}
+
+.mb60 {
+    margin-bottom: 60px;
 }
 
 .ml0 {
@@ -642,6 +661,10 @@ a {
     text-align: right;
 }
 
+.cp {
+    cursor: pointer;
+}
+
 
 /*块状*/
 
@@ -698,6 +721,10 @@ a {
     font-size: 24px
 }
 
+.f28 {
+    font-size: 28px
+}
+
 .f30 {
     font-size: 30px
 }
@@ -732,12 +759,16 @@ a {
     color: #666666;
 }
 
+.c999 {
+    color: #999;
+}
+
 .xxy-h {
     color: #8c8c8c
 }
 
 .red {
-    color: #ec4648 !important;
+    color: #E24021 !important;
 }
 
 .white {
@@ -1087,6 +1118,14 @@ a {
     display: none;
 }
 
+.bg-f8 {
+    background: #f8f8f8;
+}
+
 .bgf9 {
     background: #f9f9f9;
+}
+
+.bg-fff {
+    background: #fff;
 }
